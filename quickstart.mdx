@@ -1,47 +1,96 @@
 ---
-title: "Quickstart"
-description: "Begin with a guide on the fastest path to a successful outcome"
+title: "Get Started with Kyara Intelligence"
+sidebarTitle: "Quickstart"
+description: "Make your first Kyara Intelligence API call in under a minute. Create an API key, pick a model, and send a chat completions request."
 ---
 
-Describe how someone begins using your product. What is the first thing they need to do? Are there any prerequisites?
-
-A quickstart should take someone from zero to using your product. They'll get a quick win and a sense of what they can accomplish.
-
-## Prerequisites
-
-Before you begin, you must have:
-
-- Requirement one (for example, Node.js 18+, a free account, an API key)
-- Requirement two (for example, a compatible device, a compatible browser, a compatible operating system)
-
-## Get started
+This quickstart walks you through everything you need to get your first response from the Kyara Intelligence API. By the end you'll have a working API key, a chosen model, and a successful chat completions call — in under a minute.
 
 <Steps>
-  <Step title="Install">
-    Describe how to install your product or sign up.
+  <Step title="Create an API key">
+    Open the [Kyara dashboard](https://kyara-intelligence.com/dashboard) and create a new API key. The key is shown only once, so copy it immediately and store it somewhere safe.
+
+    Set it as an environment variable so you never have to hard-code it:
 
     ```bash
-    npm install your-package
+    export KYARA_INTELLIGENCE_API_KEY="your-api-key-here"
     ```
   </Step>
-  <Step title="Configure">
-    Describe any setup or configuration needed before first use.
 
-    ```bash
-    your-cli init
-    ```
+  <Step title="Choose a model">
+    Browse the [model catalog](https://kyara-intelligence.com/models) and copy the ID of the model you want to use. This guide uses `deepseek/deepseek-v4-flash` as a fast, low-cost default — swap in any other model ID at any time.
   </Step>
-  <Step title="Run it">
-    Show the first thing a user does to see it working.
 
-    ```bash
-    your-cli start
+  <Step title="Send a request">
+    Point your client at the Kyara base URL (`https://api.kyara-intelligence.com/v1`) and call the chat completions endpoint. If you're using the JavaScript or Python OpenAI SDK, install it first:
+
+    - **JavaScript:** `npm install openai`
+    - **Python:** `pip install openai`
+
+    Then send your first request:
+
+    <CodeGroup>
+
+    ```bash curl
+    curl https://api.kyara-intelligence.com/v1/chat/completions \
+      -H "Authorization: Bearer $KYARA_INTELLIGENCE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "model": "deepseek/deepseek-v4-flash",
+        "messages": [
+          { "role": "user", "content": "Hello!" }
+        ]
+      }'
     ```
+
+    ```javascript JavaScript
+    import OpenAI from "openai";
+
+    const client = new OpenAI({
+      baseURL: "https://api.kyara-intelligence.com/v1",
+      apiKey: process.env.KYARA_INTELLIGENCE_API_KEY,
+    });
+
+    const response = await client.chat.completions.create({
+      model: "deepseek/deepseek-v4-flash",
+      messages: [{ role: "user", content: "Hello!" }],
+    });
+
+    console.log(response.choices[0].message.content);
+    ```
+
+    ```python Python
+    import os
+    from openai import OpenAI
+
+    client = OpenAI(
+        base_url="https://api.kyara-intelligence.com/v1",
+        api_key=os.environ.get("KYARA_INTELLIGENCE_API_KEY"),
+    )
+
+    response = client.chat.completions.create(
+        model="deepseek/deepseek-v4-flash",
+        messages=[{"role": "user", "content": "Hello!"}],
+    )
+
+    print(response.choices[0].message.content)
+    ```
+
+    </CodeGroup>
+
+    <Tip>
+      Any OpenAI-compatible SDK works with the same base URL — not just the official `openai` package. If your tool lets you configure a base URL, Kyara will work with it.
+    </Tip>
   </Step>
 </Steps>
 
-<Tip>
-  Give people a way to get help. This could be a link to a support page, a chat with a customer support agent, or a forum for your product.
+## What's next
 
-  Example: Need help? Reach out to us at [support@yourcompany.com](mailto:support@yourcompany.com).
-</Tip>
+<CardGroup cols={2}>
+  <Card title="API Reference" icon="code" href="/api/chat-completions">
+    Explore the full chat completions request schema, response format, and streaming.
+  </Card>
+  <Card title="SillyTavern" icon="wand-magic-sparkles" href="/integrations/sillytavern">
+    Connect the SillyTavern frontend to Kyara Intelligence in a few steps.
+  </Card>
+</CardGroup>

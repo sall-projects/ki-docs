@@ -1,0 +1,106 @@
+---
+title: "Connect Any OpenAI-Compatible App to Kyara"
+sidebarTitle: "OpenAI-Compatible Apps"
+description: "Point any OpenAI-compatible client or application at Kyara Intelligence by changing the base URL, API key, and model ID."
+---
+
+Kyara is a drop-in replacement for OpenAI in any compatible app. Most clients expose three fields — base URL, API key, and model — and once you update those three values, requests flow through Kyara's gateway without any other changes to your setup.
+
+## The three values
+
+Every OpenAI-compatible integration needs the same three pieces of information. Fill them in exactly as shown below.
+
+| Setting | Value |
+|---|---|
+| **Base URL** | `https://api.kyara-intelligence.com/v1` |
+| **API key** | Your key from the [dashboard](https://kyara-intelligence.com/dashboard) |
+| **Model** | A model ID from the [catalog](https://kyara-intelligence.com/models) |
+
+<Info>
+  Use the base URL exactly as shown, ending in `/v1`. Most clients automatically
+  append `/chat/completions` when they make a request — do **not** add that path
+  yourself. The only exception is an app that explicitly asks for a full
+  chat-completions URL; in that case, append `/chat/completions` as instructed
+  by that app.
+</Info>
+
+<Warning>
+  Kyara is text-only. If an app depends on tool calling, structured outputs,
+  vision, or audio, those features will not be available. See
+  [unsupported features](/reference/unsupported-features) for the full list.
+</Warning>
+
+## Code example
+
+Under the hood every integration sends the same HTTP request. Use any of the snippets below to verify your credentials before configuring a specific app.
+
+<CodeGroup>
+
+```bash curl
+curl https://api.kyara-intelligence.com/v1/chat/completions \
+  -H "Authorization: Bearer $KYARA_INTELLIGENCE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "deepseek/deepseek-v4-flash",
+    "messages": [
+      { "role": "user", "content": "Hello!" }
+    ]
+  }'
+```
+
+```javascript JavaScript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  baseURL: "https://api.kyara-intelligence.com/v1",
+  apiKey: process.env.KYARA_INTELLIGENCE_API_KEY,
+});
+
+const response = await client.chat.completions.create({
+  model: "deepseek/deepseek-v4-flash",
+  messages: [{ role: "user", content: "Hello!" }],
+});
+
+console.log(response.choices[0].message.content);
+```
+
+```python Python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://api.kyara-intelligence.com/v1",
+    api_key=os.environ["KYARA_INTELLIGENCE_API_KEY"],
+)
+
+response = client.chat.completions.create(
+    model="deepseek/deepseek-v4-flash",
+    messages=[{"role": "user", "content": "Hello!"}],
+)
+
+print(response.choices[0].message.content)
+```
+
+</CodeGroup>
+
+## Popular apps
+
+The setup is the same idea in every client — change the base URL, paste your key, and specify a model ID. Here are quick notes for a few common apps.
+
+<CardGroup cols={2}>
+  <Card title="Cherry Studio" href="https://www.cherry-ai.com/" icon="palette">
+    Add an OpenAI provider, set the API host to the base URL, paste your key,
+    and add a model ID from the catalog.
+  </Card>
+  <Card title="Open WebUI" href="https://openwebui.com/" icon="globe">
+    Go to **Settings → Connections** and add an OpenAI API connection with the
+    base URL and your key.
+  </Card>
+  <Card title="Continue" href="https://continue.dev/" icon="code">
+    Add a model with provider `openai`, set `apiBase` to the base URL, and
+    `apiKey` to your Kyara key. Works in both VS Code and JetBrains.
+  </Card>
+  <Card title="LibreChat" href="https://www.librechat.ai/" icon="message-circle">
+    Configure a custom endpoint with the base URL, your key, and the model IDs
+    you want to expose to users.
+  </Card>
+</CardGroup>

@@ -1,0 +1,81 @@
+---
+title: "Unsupported Features and Endpoints"
+sidebarTitle: "Unsupported Features"
+description: "Kyara Intelligence is text-in, text-out. This page lists every OpenAI feature, endpoint, and parameter not available on the platform."
+---
+
+Kyara supports the chat completions endpoint for text generation. Any OpenAI-compatible client can connect, but the following capabilities are not available on the platform.
+
+## Summary
+
+- **Function / tool calling** — `tools` and `tool_choice` are silently ignored; the model never sees them.
+- **Structured outputs and JSON mode** — `response_format` is silently ignored.
+- **Vision** — image inputs are rejected; message content must be plain text.
+- **Audio** — no audio input or output, speech synthesis, or transcription.
+- **Embeddings** — no `/v1/embeddings` endpoint.
+
+## Available endpoints
+
+Only the endpoints below exist. Every other OpenAI API path returns `404 Not Found`.
+
+| Endpoint | Status |
+| --- | --- |
+| `POST /v1/chat/completions` | **Available** (text generation only) |
+| `GET /v1/models` | **Available** |
+| `GET /v1/balance` | **Available** (Kyara extension) |
+| `/v1/completions` (legacy) | Not available |
+| `/v1/embeddings` | Not available |
+| `/v1/images/*` | Not available |
+| `/v1/audio/*` | Not available |
+| `/v1/responses` | Not available |
+| `/v1/files`, `/v1/batches` | Not available |
+| `/v1/fine_tuning/*` | Not available |
+| `/v1/moderations` | Not available |
+| `/v1/assistants`, `/v1/threads`, `/v1/vector_stores` | Not available |
+| `/v1/realtime` | Not available |
+
+## Request parameters
+
+Chat completions requests are validated against an allowlist. Every parameter falls into one of three groups: forwarded to the model, silently ignored, or rejected with a `400` error.
+
+### Supported
+
+These parameters are accepted and passed through to the model:
+
+- `model`, `messages`
+- `temperature`, `top_p`, `top_k`, `presence_penalty`, `frequency_penalty`, `seed`
+- `max_tokens`, `max_completion_tokens`, `stop`, `n`
+- `stream`, `stream_options`
+- `logprobs`, `top_logprobs`, `user`
+- `reasoning` (object with `effort` and/or `max_tokens`)
+
+### Silently ignored
+
+<Info>
+  The following parameters do not produce an error. For client compatibility, Kyara removes unrecognized top-level parameters from the request rather than rejecting it. Sending `tools` or `response_format` returns a normal text response — the model never sees those fields, so tool calls and structured output simply will not happen.
+</Info>
+
+- `tools`, `tool_choice`, `functions`, `parallel_tool_calls`
+- `response_format` (JSON mode and structured outputs)
+- `reasoning_effort` (use the nested `reasoning.effort` instead)
+- `logit_bias`, `prediction`
+- `modalities`, `audio`, `web_search_options`
+- `store`, `metadata`, `service_tier`
+
+### Rejected with an error
+
+The following request shapes return a `400` validation error:
+
+- Message `content` that is not a plain string — multimodal content arrays containing `image_url` or audio parts are rejected.
+- Message roles other than `system`, `developer`, `user`, or `assistant` — there is no `tool` role.
+- Unknown fields inside `messages`, `stream_options`, or `reasoning` objects.
+
+## Notes
+
+- `top_k` is accepted as an extension beyond the OpenAI standard; many models support it.
+- To control reasoning, send `"reasoning": { "effort": "medium" }` rather than the top-level `reasoning_effort`.
+- Support for sampling parameters varies per model — check the [catalog](https://kyara-intelligence.com/models).
+
+<Tip>
+  This list can shrink. Unsupported today does not mean unsupported forever. Check back here as the platform evolves; newly added capabilities will move off this page and into the API reference.
+</Tip>

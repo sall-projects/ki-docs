@@ -1,0 +1,205 @@
+---
+title: "POST /v1/chat/completions — Chat Completions API"
+sidebarTitle: "Chat Completions"
+description: "Send a text generation request to Kyara Intelligence. Supports streaming via Server-Sent Events and standard sampling parameters."
+---
+
+The chat completions endpoint accepts standard OpenAI-format requests and returns text responses. You can connect any OpenAI-compatible client by pointing it at the Kyara base URL. The endpoint is text-only — see [Unsupported Features](/reference/unsupported-features) for a full list of capabilities such as tool calling that are not available.
+
+## Request
+
+```
+POST https://api.kyara-intelligence.com/v1/chat/completions
+```
+
+<CodeGroup>
+
+```bash curl
+curl https://api.kyara-intelligence.com/v1/chat/completions \
+  -H "Authorization: Bearer $KYARA_INTELLIGENCE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "deepseek/deepseek-v4-flash",
+    "messages": [
+      { "role": "user", "content": "Hello!" }
+    ]
+  }'
+```
+
+```javascript JavaScript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  baseURL: "https://api.kyara-intelligence.com/v1",
+  apiKey: process.env.KYARA_INTELLIGENCE_API_KEY,
+});
+
+const response = await client.chat.completions.create({
+  model: "deepseek/deepseek-v4-flash",
+  messages: [{ role: "user", content: "Hello!" }],
+});
+
+console.log(response.choices[0].message.content);
+```
+
+```python Python
+import os
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://api.kyara-intelligence.com/v1",
+    api_key=os.environ.get("KYARA_INTELLIGENCE_API_KEY"),
+)
+
+response = client.chat.completions.create(
+    model="deepseek/deepseek-v4-flash",
+    messages=[{"role": "user", "content": "Hello!"}],
+)
+
+print(response.choices[0].message.content)
+```
+
+</CodeGroup>
+
+<ParamField body="model" type="string" required>
+  The model ID to use for the request. Find available model IDs in the [catalog](https://kyara-intelligence.com/models).
+</ParamField>
+
+<ParamField body="messages" type="array" required>
+  An array of message objects forming the conversation. Each object requires a `role` (`system`, `developer`, `user`, or `assistant`) and a `content` string. Content must be plain text — multimodal arrays are rejected.
+</ParamField>
+
+<ParamField body="temperature" type="number">
+  Sampling temperature between `0` and `2`. Higher values produce more varied output; lower values produce more focused, deterministic output. Support varies per model.
+</ParamField>
+
+<ParamField body="top_p" type="number">
+  Nucleus sampling probability mass. The model considers only the tokens comprising the top `top_p` probability mass. Support varies per model.
+</ParamField>
+
+<ParamField body="top_k" type="integer">
+  Kyara extension. Limits sampling to the top `k` most likely tokens. Accepted by many models beyond the OpenAI standard.
+</ParamField>
+
+<ParamField body="max_tokens" type="integer">
+  Maximum number of tokens to generate. You can use `max_completion_tokens` interchangeably.
+</ParamField>
+
+<ParamField body="max_completion_tokens" type="integer">
+  Alias for `max_tokens`. Maximum number of tokens to generate in the completion.
+</ParamField>
+
+<ParamField body="stream" type="boolean">
+  Set to `true` to receive the response as Server-Sent Events, token by token. Defaults to `false`.
+</ParamField>
+
+<ParamField body="reasoning" type="object">
+  Controls reasoning behaviour for models that support it. Pass an object with either or both of:
+  - `effort` (string) — e.g. `"low"`, `"medium"`, or `"high"`
+  - `max_tokens` (integer) — maximum tokens to spend on reasoning
+
+  Use `reasoning.effort` rather than the top-level `reasoning_effort`, which is silently ignored.
+</ParamField>
+
+<ParamField body="n" type="integer">
+  Number of completion choices to generate for the request. Defaults to `1`.
+</ParamField>
+
+<ParamField body="stop" type="string | array">
+  Up to four sequences where the model will stop generating further tokens.
+</ParamField>
+
+<ParamField body="seed" type="integer">
+  A seed for deterministic sampling. Passing the same seed and request parameters should produce the same result, though determinism is not guaranteed.
+</ParamField>
+
+## Response
+
+A successful request returns a JSON object matching the OpenAI chat completions schema.
+
+```json
+{
+  "id": "chatcmpl-abc123",
+  "object": "chat.completion",
+  "model": "deepseek/deepseek-v4-flash",
+  "choices": [
+    {
+      "index": 0,
+      "message": { "role": "assistant", "content": "Hello! How can I help you today?" },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": { "prompt_tokens": 9, "completion_tokens": 9, "total_tokens": 18 }
+}
+```
+
+<ResponseField name="id" type="string">
+  A unique identifier for the completion, prefixed with `chatcmpl-`.
+</ResponseField>
+
+<ResponseField name="object" type="string">
+  Always `"chat.completion"` for non-streaming responses.
+</ResponseField>
+
+<ResponseField name="model" type="string">
+  The model ID that was used to generate the response.
+</ResponseField>
+
+<ResponseField name="choices" type="array">
+  An array of completion choices.
+
+  <Expandable title="Choice object">
+    <ResponseField name="index" type="integer">
+      Zero-based index of this choice in the array.
+    </ResponseField>
+    <ResponseField name="message" type="object">
+      The generated message. Contains `role` (`"assistant"`) and `content` (string).
+    </ResponseField>
+    <ResponseField name="finish_reason" type="string">
+      The reason generation stopped. Common values: `"stop"`, `"length"`.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="usage" type="object">
+  Token usage for the request.
+
+  <Expandable title="Usage object">
+    <ResponseField name="prompt_tokens" type="integer">
+      Number of tokens in the input messages.
+    </ResponseField>
+    <ResponseField name="completion_tokens" type="integer">
+      Number of tokens in the generated output.
+    </ResponseField>
+    <ResponseField name="total_tokens" type="integer">
+      Total tokens consumed (`prompt_tokens` + `completion_tokens`).
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Streaming
+
+Set `"stream": true` to receive the response as Server-Sent Events. Kyara sends one `data:` event per token and terminates the stream with `data: [DONE]`.
+
+```bash curl
+curl https://api.kyara-intelligence.com/v1/chat/completions \
+  -H "Authorization: Bearer $KYARA_INTELLIGENCE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "deepseek/deepseek-v4-flash",
+    "stream": true,
+    "messages": [
+      { "role": "user", "content": "Hello!" }
+    ]
+  }'
+```
+
+To include token usage in the final stream event, add `"stream_options": { "include_usage": true }` to your request.
+
+<Note>
+  Model IDs and pricing can change during early access. Use the [models page](https://kyara-intelligence.com/models) as the current source of truth for available models.
+</Note>
+
+<Note>
+  Features such as tool calling, structured outputs, vision, and embeddings are not supported. See [Unsupported Features](/reference/unsupported-features) for the complete list.
+</Note>

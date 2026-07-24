@@ -1,0 +1,68 @@
+{
+  "projectType": "api-service",
+  "projectName": "Kyara Intelligence",
+  "projectDescription": "An OpenAI-compatible AI gateway that lets you connect any OpenAI client or app to Kyara's model catalog using a drop-in base URL swap.",
+  "theme": "luma",
+  "primaryColor": "#5fc8ae",
+  "lightColor": "#c1df8a",
+  "darkColor": null,
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Docs",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "authentication"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "integrations/openai-compatible",
+              "integrations/sillytavern"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              "reference/unsupported-features"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Endpoints",
+            "pages": [
+              "api/chat-completions",
+              "api/balance",
+              "api/onboarding"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "OpenAI-compatible Chat Completions API",
+    "Streaming responses via Server-Sent Events",
+    "Bearer token API key authentication",
+    "Credit balance endpoint with plan tiers",
+    "Hosted onboarding flow for user-provided keys",
+    "Broad model catalog (deepseek and others)",
+    "Supported sampling parameters: temperature, top_p, top_k, max_tokens, seed, and more",
+    "Text-in, text-out — no vision, audio, or tool-calling overhead"
+  ],
+  "publicApiSurface": [
+    "POST /v1/chat/completions",
+    "GET /v1/models",
+    "GET /v1/balance",
+    "GET /onboard?redirect=<url>"
+  ]
+}

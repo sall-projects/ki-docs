@@ -1,0 +1,116 @@
+---
+title: "GET /v1/balance — Check Your Credit Balance"
+sidebarTitle: "Balance"
+description: "Read your Kyara Intelligence credit balances and plan caps. Returns base credits, overage credits, totals, and the current billing window."
+---
+
+The balance endpoint returns your current credit balances, plan caps, and billing window details. Call it at any time to check how many credits you have remaining and when your base balance next refreshes.
+
+## Request
+
+```
+GET https://api.kyara-intelligence.com/v1/balance
+```
+
+```bash curl
+curl https://api.kyara-intelligence.com/v1/balance \
+  -H "Authorization: Bearer $KYARA_INTELLIGENCE_API_KEY"
+```
+
+<ParamField header="Authorization" type="string" required>
+  Your Kyara Intelligence API key, formatted as `Bearer YOUR_API_KEY`.
+</ParamField>
+
+## Response
+
+A successful request returns a JSON object with your balances, caps, and the active billing window.
+
+```json
+{
+  "object": "balance",
+  "available": true,
+  "plan": "lite",
+  "balances": {
+    "base": { "credits": 500000, "percent": 50 },
+    "overage": { "credits": 25000000, "percent": 25 },
+    "total": { "credits": 25500000, "percent": 25.25 }
+  },
+  "caps": {
+    "base": { "credits": 1000000 },
+    "overage": { "credits": 100000000 },
+    "total": { "credits": 101000000 }
+  },
+  "baseWindow": {
+    "startedAt": "2030-01-01T00:00:00.000Z",
+    "refreshesAt": "2030-01-01T04:00:00.000Z"
+  }
+}
+```
+
+<ResponseField name="object" type="string">
+  Always `"balance"`.
+</ResponseField>
+
+<ResponseField name="available" type="boolean">
+  `true` while you have credits remaining. Becomes `false` when your total balance is fully exhausted.
+</ResponseField>
+
+<ResponseField name="plan" type="string">
+  Your current Kyara plan identifier (e.g. `"lite"`).
+</ResponseField>
+
+<ResponseField name="balances" type="object">
+  Your remaining credits broken down by type.
+
+  <Expandable title="Balances object">
+    <ResponseField name="base" type="object">
+      Credits from your plan's base allocation. Contains `credits` (integer) and `percent` (number — percentage of the base cap remaining).
+    </ResponseField>
+    <ResponseField name="overage" type="object">
+      Credits from your overage pool. Contains `credits` (integer) and `percent` (number).
+    </ResponseField>
+    <ResponseField name="total" type="object">
+      Combined base and overage credits. Contains `credits` (integer) and `percent` (number — percentage of the total cap remaining).
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="caps" type="object">
+  The maximum credit limits for your plan.
+
+  <Expandable title="Caps object">
+    <ResponseField name="base" type="object">
+      Maximum base credits. Contains `credits` (integer).
+    </ResponseField>
+    <ResponseField name="overage" type="object">
+      Maximum overage credits. Contains `credits` (integer).
+    </ResponseField>
+    <ResponseField name="total" type="object">
+      Maximum total credits (`base.credits` + `overage.credits`). Contains `credits` (integer).
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="baseWindow" type="object">
+  The current billing window for your base credit allocation.
+
+  <Expandable title="BaseWindow object">
+    <ResponseField name="startedAt" type="string">
+      ISO 8601 timestamp when the current billing window began.
+    </ResponseField>
+    <ResponseField name="refreshesAt" type="string">
+      ISO 8601 timestamp when your base credits will next refresh.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Errors
+
+Errors follow the standard OpenAI error format:
+
+- **`401 authentication_error`** — your API key is missing, malformed, or invalid.
+- **`500 server_error`** — the key is valid but Kyara encountered missing or invalid balance data.
+
+<Note>
+  This endpoint never blocks on an empty balance. It always reports the current state and returns `available: false` when credits are exhausted rather than refusing the request.
+</Note>

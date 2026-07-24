@@ -1,0 +1,56 @@
+---
+title: "Kyara Intelligence: OpenAI-Compatible AI Gateway"
+sidebarTitle: "Introduction"
+description: "Kyara Intelligence is an OpenAI-compatible AI gateway. Swap the base URL, use your Kyara API key, and pick a model — no new SDK needed."
+---
+
+Kyara Intelligence is an OpenAI-compatible AI gateway that gives you access to a curated catalog of high-performance models through a single, familiar API. Because Kyara speaks the OpenAI Chat Completions protocol, you can point any existing OpenAI SDK or compatible application at Kyara without writing new integration code — swap three values and you're live.
+
+## How it works
+
+Kyara routes requests through the same interface you already know. To switch from OpenAI to Kyara, change exactly three things in your existing code or client:
+
+<Steps>
+  <Step title="Set the base URL">
+    Replace the OpenAI base URL with `https://api.kyara-intelligence.com/v1` in your SDK configuration or HTTP client.
+  </Step>
+  <Step title="Use your Kyara API key">
+    Pass your Kyara API key as the bearer token. Store it in an environment variable named `KYARA_INTELLIGENCE_API_KEY` so it stays out of your source code.
+  </Step>
+  <Step title="Pick a model ID">
+    Choose a model from the [Kyara model catalog](https://kyara-intelligence.com/models) and use its ID in the `model` field. A fast, low-cost starting point is `deepseek/deepseek-v4-flash`.
+  </Step>
+</Steps>
+
+## Your first request
+
+Send the request below to verify your key and see a live response. Replace `$KYARA_INTELLIGENCE_API_KEY` with your actual key, or export it as an environment variable first.
+
+```bash
+curl https://api.kyara-intelligence.com/v1/chat/completions \
+  -H "Authorization: Bearer $KYARA_INTELLIGENCE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "deepseek/deepseek-v4-flash",
+    "messages": [
+      { "role": "user", "content": "Hello!" }
+    ]
+  }'
+```
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="bolt" href="/quickstart">
+    Make your first API call in under a minute with curl, JavaScript, or Python.
+  </Card>
+  <Card title="Authentication" icon="key" href="/authentication">
+    Learn how to create API keys, pass bearer tokens, and keep credentials secure.
+  </Card>
+  <Card title="API Reference" icon="code" href="/api/chat-completions">
+    Explore the full chat completions endpoint, request schema, and streaming options.
+  </Card>
+  <Card title="OpenAI-Compatible Apps" icon="plug" href="/integrations/openai-compatible">
+    Point any OpenAI-compatible client or application at the Kyara gateway.
+  </Card>
+</CardGroup>

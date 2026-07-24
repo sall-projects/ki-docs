@@ -1,0 +1,41 @@
+---
+title: "Hosted Onboarding Flow for User API Keys"
+sidebarTitle: "Onboarding"
+description: "Let your app's users create their own Kyara Intelligence API keys via a hosted onboarding flow. Redirect users back after key creation."
+---
+
+If you are building an app for other users and each user needs their own Kyara API key, use the hosted onboarding URL instead of asking users to navigate to the dashboard and create keys manually. Kyara handles authentication, key generation, and explanation in a single hosted flow, then sends the user back to your app.
+
+## Onboarding URL
+
+Direct your users to the following URL, replacing the `redirect` value with your own callback address:
+
+```
+https://api.kyara-intelligence.com/onboard?redirect=https://your-app.com/callback
+```
+
+<ParamField query="redirect" type="string" required>
+  The URL Kyara redirects the user to after they generate their key. Must be a valid `http` or `https` URL. Kyara displays the destination domain to the user before sending them back, so they always know where they are going.
+</ParamField>
+
+## What the user sees
+
+<Steps>
+  <Step title="Sign in or create a Kyara account">
+    The user authenticates with Kyara. If they don't have an account yet, they can sign up in the same flow.
+  </Step>
+  <Step title="Review and generate a key">
+    Kyara explains what an API key is for and which app requested it, then the user generates one.
+  </Step>
+  <Step title="Return to your app">
+    The user is redirected to the `redirect` URL you provided so they can finish connecting their key inside your app.
+  </Step>
+</Steps>
+
+<Note>
+  The `redirect` value must be a valid HTTP or HTTPS URL. Kyara shows the destination domain to the user before sending them back, giving them full visibility into where they are being redirected.
+</Note>
+
+<Tip>
+  Link users directly to this onboarding URL in your app's settings or onboarding flow — it handles signup and key creation in a single step, with no manual dashboard navigation required.
+</Tip>

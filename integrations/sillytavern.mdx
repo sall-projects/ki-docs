@@ -1,0 +1,95 @@
+---
+title: "Connect SillyTavern to Kyara Intelligence"
+sidebarTitle: "SillyTavern"
+description: "Configure SillyTavern to use Kyara Intelligence as a custom OpenAI-compatible backend source for AI roleplay and chat."
+---
+
+SillyTavern connects to Kyara as a custom OpenAI-compatible source. Before you open the settings panel, grab your API key from the [dashboard](https://kyara-intelligence.com/dashboard) and pick a model ID from the [catalog](https://kyara-intelligence.com/models) — you'll need both in hand.
+
+<Info>
+  **Quick reference**
+
+  | Setting | Value |
+  |---|---|
+  | **Base URL** | `https://api.kyara-intelligence.com/v1` |
+  | **Model example** | `deepseek/deepseek-v4-flash` |
+</Info>
+
+## Step by step
+
+<Steps>
+  <Step title="Open the API Connections panel">
+    In SillyTavern, click the **plug icon** in the top bar to open the **API
+    Connections** panel.
+  </Step>
+  <Step title="Set API to Chat Completion">
+    Under the **API** dropdown, choose `Chat Completion`.
+  </Step>
+  <Step title="Set Chat Completion Source to Custom">
+    Under **Chat Completion Source**, choose `Custom (OpenAI-compatible)`.
+  </Step>
+  <Step title="Enter the base URL">
+    In the **Custom Endpoint (Base URL)** field, paste:
+
+    ```
+    https://api.kyara-intelligence.com/v1
+    ```
+  </Step>
+  <Step title="Paste your API key and save">
+    In **Custom API Key**, paste the key from your
+    [dashboard](https://kyara-intelligence.com/dashboard), then click the save
+    or connect button so it sticks.
+  </Step>
+  <Step title="Enter a model ID">
+    In the **Model** field, enter a model ID from the
+    [catalog](https://kyara-intelligence.com/models). For example:
+
+    ```
+    deepseek/deepseek-v4-flash
+    ```
+  </Step>
+  <Step title="Connect and test">
+    Click **Connect**, then click **Test Message**. A **✨ Valid ✨**
+    confirmation means you're live and ready to chat.
+  </Step>
+</Steps>
+
+<Warning>
+  Your base URL must end in `/v1` — do **not** add `/chat/completions`.
+  SillyTavern appends that path automatically, so a URL of
+  `https://api.kyara-intelligence.com/v1/chat/completions` will fail.
+</Warning>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Not connecting?">
+    Check three things in order:
+
+    1. The base URL ends with `/v1` and nothing more.
+    2. Your API key was actually saved — re-paste it and click the save button again.
+    3. The model ID has no typos. Copy it directly from the [catalog](https://kyara-intelligence.com/models) rather than typing it by hand.
+  </Accordion>
+  <Accordion title="Which model is best for roleplay?">
+    Start with `deepseek/deepseek-v4-flash` for fast, inexpensive responses
+    while you get familiar with the setup. Once you have a feel for it, browse
+    the [catalog](https://kyara-intelligence.com/models) for larger-context,
+    character-tuned options that better match your style.
+  </Accordion>
+</AccordionGroup>
+
+## Sanity-check your key
+
+Before opening SillyTavern, confirm your key works by sending a request directly from the terminal. A well-formed JSON response means your credentials are valid.
+
+```bash
+curl https://api.kyara-intelligence.com/v1/chat/completions \
+  -H "Authorization: Bearer $KYARA_INTELLIGENCE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "deepseek/deepseek-v4-flash",
+    "messages": [
+      { "role": "user", "content": "ping" }
+    ]
+  }'
+```
