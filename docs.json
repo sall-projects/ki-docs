@@ -22,9 +22,11 @@
     "tabs": [
       {
         "tab": "Docs",
+        "icon": "book-open",
         "groups": [
           {
             "group": "Get Started",
+            "icon": "rocket",
             "pages": [
               "introduction",
               "quickstart",
@@ -33,6 +35,7 @@
           },
           {
             "group": "Integrations",
+            "icon": "plug",
             "pages": [
               "integrations/openai-compatible",
               "integrations/sillytavern"
@@ -40,6 +43,7 @@
           },
           {
             "group": "Reference",
+            "icon": "book",
             "pages": [
               "reference/unsupported-features"
             ]
@@ -48,9 +52,11 @@
       },
       {
         "tab": "API Reference",
+        "icon": "code",
         "groups": [
           {
             "group": "Endpoints",
+            "icon": "server",
             "pages": [
               "api/chat-completions",
               "api/balance",
