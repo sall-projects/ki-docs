@@ -8,10 +8,21 @@
   },
   "logo": {
     "light": "https://media.brand.dev/62ba0ff8-8391-444b-8095-6f1eee6a18c7.svg",
-    "dark": "https://media.brand.dev/62ba0ff8-8391-444b-8095-6f1eee6a18c7.svg"
+    "dark": "https://media.brand.dev/62ba0ff8-8391-444b-8095-6f1eee6a18c7.svg",
+    "href": "https://kyara-intelligence.com/"
   },
   "favicon": "https://media.brand.dev/d7498390-32c6-4a82-a55a-620ab7db64e1.svg",
+  "banner": {
+    "content": "**Early access:** features, availability, and pricing may change as Kyara Intelligence evolves.",
+    "dismissible": true
+  },
   "navbar": {
+    "links": [
+      {
+        "label": "Kyara Intelligence",
+        "href": "https://kyara-intelligence.com/"
+      }
+    ],
     "primary": {
       "type": "button",
       "label": "Dashboard",
@@ -37,8 +48,18 @@
             "group": "Integrations",
             "icon": "plug",
             "pages": [
-              "integrations/openai-compatible",
-              "integrations/sillytavern"
+              "integrations/open-webui",
+              "integrations/sillytavern",
+              "integrations/openai-compatible"
+            ]
+          },
+          {
+            "group": "API Reference",
+            "icon": "code",
+            "pages": [
+              "api/chat-completions",
+              "api/balance",
+              "api/onboarding"
             ]
           },
           {
@@ -46,21 +67,6 @@
             "icon": "book",
             "pages": [
               "reference/unsupported-features"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "API Reference",
-        "icon": "code",
-        "groups": [
-          {
-            "group": "Endpoints",
-            "icon": "server",
-            "pages": [
-              "api/chat-completions",
-              "api/balance",
-              "api/onboarding"
             ]
           }
         ]
