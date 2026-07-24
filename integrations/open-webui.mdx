@@ -1,0 +1,89 @@
+---
+title: "Open WebUI"
+sidebarTitle: "Open WebUI"
+description: "Connect Open WebUI to Kyara Intelligence as an OpenAI API connection. Add the base URL and your key, and Kyara models appear in the model picker."
+---
+
+Open WebUI talks to Kyara through its built-in OpenAI API connection. Add one connection with the Kyara base URL and your API key, and every model in the catalog shows up in the model picker. No plugins or extra setup required.
+
+Before you start, grab your API key from the [dashboard](https://kyara-intelligence.com/dashboard).
+
+<Info>
+  **Quick reference**
+
+  | Setting | Value |
+  |---|---|
+  | **API Base URL** | `https://api.kyara-intelligence.com/v1` |
+  | **API Key** | Your key from the [dashboard](https://kyara-intelligence.com/dashboard) |
+</Info>
+
+<Warning>
+  Use the base URL exactly as shown, ending in `/v1`. Open WebUI adds
+  `/chat/completions` for you, so do **not** include that path yourself.
+</Warning>
+
+## Add the connection
+
+<Steps>
+  <Step title="Open Admin Settings">
+    Click your profile icon in the bottom left, then open **Admin Panel**.
+    Go to **Settings**, then **Connections**.
+  </Step>
+  <Step title="Add an OpenAI API connection">
+    Under **OpenAI API**, click the **+** button to add a new connection.
+  </Step>
+  <Step title="Enter the base URL and key">
+    Set the **URL** to:
+
+    ```text
+    https://api.kyara-intelligence.com/v1
+    ```
+
+    Then paste your Kyara API key into the **Key** field.
+  </Step>
+  <Step title="Save and verify">
+    Click **Save**. Open WebUI fetches the model list from Kyara, so the models
+    from the [catalog](https://kyara-intelligence.com/models) become available
+    right away.
+  </Step>
+  <Step title="Start chatting">
+    Open a new chat, pick a Kyara model such as `deepseek/deepseek-v4-flash`
+    from the model selector at the top, and send a message.
+  </Step>
+</Steps>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="No models show up">
+    Reopen the connection and confirm the URL ends in `/v1` with no trailing
+    path, and that the key was saved. Then refresh the page so the model list
+    reloads.
+  </Accordion>
+  <Accordion title="Requests fail with a 401">
+    The key is missing or wrong. Re-copy it from the
+    [dashboard](https://kyara-intelligence.com/dashboard), paste it into the
+    connection's **Key** field, and save again.
+  </Accordion>
+  <Accordion title="A feature isn't working">
+    Kyara is text-only. Image input, tool calling, and web search are not
+    available. See [unsupported features](/reference/unsupported-features) for
+    the full list.
+  </Accordion>
+</AccordionGroup>
+
+## Check your key first
+
+If you want to confirm your credentials before touching Open WebUI, send a request straight from the terminal. A JSON response means the key works.
+
+```bash
+curl https://api.kyara-intelligence.com/v1/chat/completions \
+  -H "Authorization: Bearer $KYARA_INTELLIGENCE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "deepseek/deepseek-v4-flash",
+    "messages": [
+      { "role": "user", "content": "ping" }
+    ]
+  }'
+```

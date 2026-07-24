@@ -1,14 +1,14 @@
 ---
-title: "Connect Any OpenAI-Compatible App to Kyara"
-sidebarTitle: "OpenAI-Compatible Apps"
-description: "Point any OpenAI-compatible client or application at Kyara Intelligence by swapping three values: base URL, API key, and model ID."
+title: "Other OpenAI-compatible apps"
+sidebarTitle: "Other Apps"
+description: "Point any OpenAI-compatible client at Kyara Intelligence by setting three values: base URL, API key, and model ID."
 ---
 
-Kyara is a drop-in replacement for OpenAI in any compatible app. Most clients expose three fields — base URL, API key, and model — and once you update those three values, requests flow through Kyara's gateway without any other changes to your setup.
+Kyara is a drop-in replacement for OpenAI in any compatible app. Most clients ask for the same three things: a base URL, an API key, and a model. Set those values and your requests flow through the Kyara gateway. Nothing else in your setup changes.
+
+Have a dedicated guide? See [Open WebUI](/integrations/open-webui) and [SillyTavern](/integrations/sillytavern). For everything else, use the three values below.
 
 ## The three values
-
-Every OpenAI-compatible integration needs the same three pieces of information. Fill them in exactly as shown below.
 
 | Setting | Value |
 |---|---|
@@ -17,22 +17,21 @@ Every OpenAI-compatible integration needs the same three pieces of information. 
 | **Model** | A model ID from the [catalog](https://kyara-intelligence.com/models) |
 
 <Info>
-  Use the base URL exactly as shown, ending in `/v1`. Most clients automatically
-  append `/chat/completions` when they make a request — do **not** add that path
-  yourself. The only exception is an app that explicitly asks for a full
-  chat-completions URL; in that case, append `/chat/completions` as instructed
-  by that app.
+  Use the base URL exactly as shown, ending in `/v1`. Most clients add
+  `/chat/completions` for you, so do **not** include that path yourself. The one
+  exception is an app that asks for a full chat-completions URL. In that case,
+  append `/chat/completions` as that app instructs.
 </Info>
 
 <Warning>
-  Kyara is text-only. If an app depends on tool calling, structured outputs,
-  vision, or audio, those features will not be available. See
+  Kyara is text-only. If an app relies on tool calling, structured outputs,
+  vision, or audio, those features will not work. See
   [unsupported features](/reference/unsupported-features) for the full list.
 </Warning>
 
-## Code example
+## Check your credentials
 
-Under the hood every integration sends the same HTTP request. Use any of the snippets below to verify your credentials before configuring a specific app.
+Every integration sends the same HTTP request underneath. Run any snippet below to confirm your key works before you configure a specific app.
 
 <CodeGroup>
 
@@ -83,25 +82,25 @@ print(response.choices[0].message.content)
 
 </CodeGroup>
 
-## Popular apps
+## More apps
 
-The setup is the same idea in every client — change the base URL, paste your key, and specify a model ID. Here are quick notes for a few common apps.
+The steps are the same everywhere: set the base URL, paste your key, and choose a model ID. Here are quick notes for a few common clients.
 
 <CardGroup cols={2}>
   <Card title="Cherry Studio" href="https://www.cherry-ai.com/" icon="palette">
     Add an OpenAI provider, set the API host to the base URL, paste your key,
     and add a model ID from the catalog.
   </Card>
-  <Card title="Open WebUI" href="https://openwebui.com/" icon="globe">
-    Go to **Settings → Connections** and add an OpenAI API connection with the
-    base URL and your key.
-  </Card>
   <Card title="Continue" href="https://continue.dev/" icon="code">
     Add a model with provider `openai`, set `apiBase` to the base URL, and
-    `apiKey` to your Kyara key. Works in both VS Code and JetBrains.
+    `apiKey` to your Kyara key. Works in VS Code and JetBrains.
   </Card>
   <Card title="LibreChat" href="https://www.librechat.ai/" icon="message-circle">
     Configure a custom endpoint with the base URL, your key, and the model IDs
-    you want to expose to users.
+    you want to offer users.
+  </Card>
+  <Card title="Any OpenAI SDK" href="https://kyara-intelligence.com/models" icon="terminal">
+    Set `base_url` (or `baseURL`) to the Kyara endpoint and pass your key. No
+    other code changes needed.
   </Card>
 </CardGroup>
