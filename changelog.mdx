@@ -7,7 +7,7 @@ description: "Track new features, improvements, and changes to Kyara Intelligenc
 Follow along as Kyara Intelligence evolves. This is where we track what ships. Kyara has been in active development for a while, and while earlier work is not captured here, this is the first release we are tracking publicly.
 
 <Update label="0.2" description="July 24, 2026" tags={["Stability", "Billing accuracy"]}>
-  A large rewrite of the frontend plus a wave of gateway improvements. The whole stack is more stable, usage tracking is more precise, and caching hits far more often.
+  A large rewrite of the API plus a wave of gateway improvements. The whole stack is more stable, usage tracking is more precise, and caching hits far more often.
 
   - **Reasoning controls actually work now, with more levels.** `reasoning` / `reasoning_effort` is forwarded through Bifrost's `extra_params` passthrough instead of as a top-level body field, so the setting genuinely reaches the upstream provider instead of being silently dropped. The effort enum also grew from `high` / `medium` / `low` / `minimal` / `none` to add `max` and `xhigh`.
   - **Legacy `max_tokens` is honored.** Requests fold `max_tokens` into `max_completion_tokens` before forwarding, so older OpenAI-style clients get their output limits respected, including in the pre-flight cost estimate.
