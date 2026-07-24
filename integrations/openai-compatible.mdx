@@ -1,7 +1,7 @@
 ---
 title: "Connect Any OpenAI-Compatible App to Kyara"
 sidebarTitle: "OpenAI-Compatible Apps"
-description: "Point any OpenAI-compatible client or application at Kyara Intelligence by changing the base URL, API key, and model ID."
+description: "Point any OpenAI-compatible client or application at Kyara Intelligence by swapping three values: base URL, API key, and model ID."
 ---
 
 Kyara is a drop-in replacement for OpenAI in any compatible app. Most clients expose three fields — base URL, API key, and model — and once you update those three values, requests flow through Kyara's gateway without any other changes to your setup.
@@ -65,6 +65,7 @@ console.log(response.choices[0].message.content);
 ```
 
 ```python Python
+import os
 from openai import OpenAI
 
 client = OpenAI(
