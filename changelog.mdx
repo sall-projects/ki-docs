@@ -6,6 +6,21 @@ description: "Track new features, improvements, and changes to Kyara Intelligenc
 
 Follow along as Kyara Intelligence evolves. This is where we track what ships. Kyara has been in active development for a while, and while earlier work is not captured here, this is the first release we are tracking publicly.
 
+<Update label="0.2" description="July 24, 2026" tags={["Stability", "Billing accuracy"]}>
+  A large rewrite of the frontend plus a wave of gateway improvements. The whole stack is more stable, usage tracking is more precise, and caching hits far more often.
+
+  - **Reasoning controls actually work now, with more levels.** `reasoning` / `reasoning_effort` is forwarded through Bifrost's `extra_params` passthrough instead of as a top-level body field, so the setting genuinely reaches the upstream provider instead of being silently dropped. The effort enum also grew from `high` / `medium` / `low` / `minimal` / `none` to add `max` and `xhigh`.
+  - **Legacy `max_tokens` is honored.** Requests fold `max_tokens` into `max_completion_tokens` before forwarding, so older OpenAI-style clients get their output limits respected, including in the pre-flight cost estimate.
+  - **No more concurrency cap.** The 3-concurrent-generations-per-user limit and its `Too many concurrent generations` (429) error are gone. Parallel requests just work.
+  - **Far fewer false "insufficient balance" rejections.** The pre-flight affordability check used to assume 4,096 output tokens when the client did not set a limit. That default is now 800, so users with a small remaining balance can make normal-sized requests without being blocked by a wildly pessimistic estimate.
+  - **Cleaner, more standard API responses.** Bifrost's internal `extra_fields` are now stripped from both non-streaming responses and every streaming chunk (previously chunks leaked them), and the `model` field is rewritten back to the public model id. Responses look like plain OpenAI responses.
+  - **More accurate billing.** Streaming cost is only resolved from chunks that actually carry usage. Streams that end without usage are billed on observed output and tagged `completed_no_usage`, and the whole flow is typed end to end, so you get charged on real upstream numbers more reliably.
+  - **Better error messages.** An unknown model is now a `400` with `code: "model_not_found"` (previously a bare `404`). Accounts without a plan get a `403` with `code: "no_active_plan"` and a human-readable message. Validation errors were consolidated for consistent messages and parameters.
+  - **More precise usage tracking.** Usage accounting is tighter and more reliable across both streaming and non-streaming paths.
+  - **Higher cache hit rate.** Caching now hits far more often, cutting latency and cost.
+  - **Slightly faster requests.** The balance snapshot is read once and reused across the windowed-credit refresh and the affordability check, cutting redundant database roundtrips on `/v1/chat/completions` and `/v1/balance`.
+</Update>
+
 <Update label="0.1" description="July 24, 2026" tags={["First tracked release"]}>
   The starting point for our public changelog.
 
