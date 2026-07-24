@@ -1,10 +1,10 @@
 ---
-title: "GET /v1/balance — Check Your Kyara Credit Balance"
+title: "Balance"
 sidebarTitle: "Balance"
 description: "Read your Kyara Intelligence credit balances and plan caps. Returns base credits, overage credits, totals, and the current billing window."
 ---
 
-The balance endpoint returns your current credit balances, plan caps, and billing window details. Call it at any time to check how many credits you have remaining and when your base balance next refreshes.
+The balance endpoint returns your current credit balances, plan caps, and billing window. Call it any time to check how many credits you have left and when your base balance next refreshes.
 
 ## Request
 
@@ -33,6 +33,7 @@ A successful request returns a JSON object with your balances, caps, and the act
   "balances": {
     "base": { "credits": 500000, "percent": 50 },
     "overage": { "credits": 25000000, "percent": 25 },
+    "additional": { "credits": 0 },
     "total": { "credits": 25500000, "percent": 25.25 }
   },
   "caps": {
@@ -43,6 +44,10 @@ A successful request returns a JSON object with your balances, caps, and the act
   "baseWindow": {
     "startedAt": "2030-01-01T00:00:00.000Z",
     "refreshesAt": "2030-01-01T04:00:00.000Z"
+  },
+  "overageWindow": {
+    "startedAt": "2030-01-01T00:00:00.000Z",
+    "refreshesAt": "2030-01-08T00:00:00.000Z"
   }
 }
 ```
@@ -64,13 +69,16 @@ A successful request returns a JSON object with your balances, caps, and the act
 
   <Expandable title="Balances object">
     <ResponseField name="base" type="object">
-      Credits from your plan's base allocation. Contains `credits` (integer) and `percent` (number — percentage of the base cap remaining).
+      Credits from your plan's base allocation. Contains `credits` (integer) and `percent` (number, the percentage of the base cap remaining).
     </ResponseField>
     <ResponseField name="overage" type="object">
       Credits from your overage pool. Contains `credits` (integer) and `percent` (number).
     </ResponseField>
+    <ResponseField name="additional" type="object">
+      Purchased credits, which have no plan cap. Contains `credits` (integer) only, with no `percent`.
+    </ResponseField>
     <ResponseField name="total" type="object">
-      Combined base and overage credits. Contains `credits` (integer) and `percent` (number — percentage of the total cap remaining).
+      Combined base, overage, and additional credits. Contains `credits` (integer) and `percent` (number, the percentage of the total cap remaining). The `percent` is measured against the base and overage caps only, since additional credits are uncapped.
     </ResponseField>
   </Expandable>
 </ResponseField>
@@ -104,12 +112,25 @@ A successful request returns a JSON object with your balances, caps, and the act
   </Expandable>
 </ResponseField>
 
+<ResponseField name="overageWindow" type="object">
+  The current billing window for your overage credit allocation.
+
+  <Expandable title="OverageWindow object">
+    <ResponseField name="startedAt" type="string">
+      ISO 8601 timestamp when the current overage window began.
+    </ResponseField>
+    <ResponseField name="refreshesAt" type="string">
+      ISO 8601 timestamp when your overage credits will next refresh.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
 ## Errors
 
 Errors follow the standard OpenAI error format:
 
-- **`401 authentication_error`** — your API key is missing, malformed, or invalid.
-- **`500 server_error`** — the key is valid but Kyara encountered missing or invalid balance data.
+- **`401 authentication_error`**: your API key is missing, malformed, or invalid.
+- **`500 server_error`**: the key is valid but Kyara hit missing or invalid balance data.
 
 <Note>
   This endpoint never blocks on an empty balance. It always reports the current state and returns `available: false` when credits are exhausted rather than refusing the request.

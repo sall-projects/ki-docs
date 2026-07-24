@@ -1,14 +1,14 @@
 ---
-title: "Authenticate Requests with the Kyara Intelligence API"
+title: "Authentication"
 sidebarTitle: "Authentication"
-description: "Kyara Intelligence uses API keys for authentication. Learn how to create a key, pass it as a Bearer token, and keep your credentials secure."
+description: "Kyara Intelligence uses API keys. Create a key, pass it as a Bearer token, and keep your credentials secure."
 ---
 
-Kyara Intelligence authenticates every request using an API key that you pass as a bearer token in the `Authorization` header. There are no sessions or cookies — each request is independently authenticated, so keeping your key secret is essential.
+Kyara Intelligence authenticates every request with an API key that you send as a bearer token in the `Authorization` header. There are no sessions or cookies. Each request is authenticated on its own, so keeping your key secret is essential.
 
 ## Get your key
 
-Create and manage your API keys in the [Kyara dashboard](https://kyara-intelligence.com/dashboard). When you generate a new key, it is shown to you **only once** — copy it immediately and store it somewhere secure such as a password manager or a secrets vault.
+Create and manage your API keys in the [Kyara dashboard](https://kyara-intelligence.com/dashboard). When you generate a new key, it is shown to you **only once**, so copy it immediately and store it somewhere secure such as a password manager or a secrets vault.
 
 If you ever need to rotate a key, you can regenerate it from the dashboard at any time. Regenerating a key immediately revokes the old one, so update any services using it before you rotate.
 
@@ -28,7 +28,7 @@ curl https://api.kyara-intelligence.com/v1/chat/completions \
   }'
 ```
 
-If you're using the OpenAI JavaScript or Python SDK, you don't need to set the header manually — the SDK handles it automatically when you supply your key via the `apiKey` parameter:
+If you're using the OpenAI JavaScript or Python SDK, you don't need to set the header manually. The SDK does it for you when you supply your key through the `apiKey` parameter:
 
 ```javascript
 const client = new OpenAI({
@@ -49,7 +49,7 @@ If you're building an application for other people, use the hosted onboarding fl
 https://api.kyara-intelligence.com/onboard?redirect=<your-redirect-url>
 ```
 
-Kyara guides the user through creating their own API key and then redirects them back to your app with the key included. This keeps your users in control of their own credentials. See the [onboarding API reference](/api/onboarding) for full details on the redirect parameters and the returned payload.
+Kyara guides the user through creating their own API key, shows it to them once, and then sends them back to your app through the `redirect` URL. The key is not appended to the redirect, so the user copies it and pastes it into your app to finish connecting. This keeps your users in control of their own credentials. See the [onboarding API reference](/api/onboarding) for full details on the redirect parameter and the flow.
 
 ## Error reference
 

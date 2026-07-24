@@ -1,10 +1,10 @@
 ---
-title: "POST /v1/chat/completions — Chat Completions API"
+title: "Chat completions"
 sidebarTitle: "Chat Completions"
-description: "Send a text generation request to Kyara Intelligence. Supports streaming via Server-Sent Events and all standard OpenAI sampling parameters."
+description: "Send a text generation request to Kyara Intelligence. Supports streaming over Server-Sent Events and the standard OpenAI sampling parameters."
 ---
 
-The chat completions endpoint accepts standard OpenAI-format requests and returns text responses. You can connect any OpenAI-compatible client by pointing it at the Kyara base URL. The endpoint is text-only — see [Unsupported Features](/reference/unsupported-features) for a full list of capabilities such as tool calling that are not available.
+The chat completions endpoint takes standard OpenAI-format requests and returns text. Point any OpenAI-compatible client at the Kyara base URL to use it. The endpoint is text-only. See [Unsupported Features](/reference/unsupported-features) for the capabilities, such as tool calling, that are not available.
 
 ## Request
 
@@ -66,7 +66,7 @@ print(response.choices[0].message.content)
 </ParamField>
 
 <ParamField body="messages" type="array" required>
-  An array of message objects forming the conversation. Each object requires a `role` (`system`, `developer`, `user`, or `assistant`) and a `content` string. Content must be plain text — multimodal arrays are rejected.
+  An array of message objects forming the conversation. Each object requires a `role` (`system`, `developer`, `user`, or `assistant`) and a `content` string. Content must be plain text. Multimodal arrays are rejected.
 </ParamField>
 
 <ParamField body="temperature" type="number">
@@ -95,14 +95,14 @@ print(response.choices[0].message.content)
 
 <ParamField body="reasoning" type="object">
   Controls reasoning behaviour for models that support it. Pass an object with either or both of:
-  - `effort` (string) — e.g. `"low"`, `"medium"`, or `"high"`
-  - `max_tokens` (integer) — maximum tokens to spend on reasoning
+  - `effort` (string), for example `"low"`, `"medium"`, or `"high"`
+  - `max_tokens` (integer), the maximum tokens to spend on reasoning
 
-  Use `reasoning.effort` rather than the top-level `reasoning_effort`, which is silently ignored.
+  The top-level `reasoning_effort` is also accepted and is folded into `reasoning.effort`. If you set both, `reasoning.effort` takes precedence.
 </ParamField>
 
 <ParamField body="n" type="integer">
-  Number of completion choices to generate for the request. Defaults to `1`.
+  Number of completion choices to generate. Only `1` is supported; any other value returns a `400` error. Defaults to `1`.
 </ParamField>
 
 <ParamField body="stop" type="string | array">

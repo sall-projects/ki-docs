@@ -1,10 +1,10 @@
 ---
-title: "Hosted Onboarding: Help Users Create Their API Keys"
+title: "Onboarding"
 sidebarTitle: "Onboarding"
-description: "Let your app's users create their own Kyara Intelligence API keys via a hosted onboarding flow. Redirect users back after key creation."
+description: "Let your users create their own Kyara Intelligence API keys through a hosted flow, then send them back to your app."
 ---
 
-If you are building an app for other users and each user needs their own Kyara API key, use the hosted onboarding URL instead of asking users to navigate to the dashboard and create keys manually. Kyara handles authentication, key generation, and explanation in a single hosted flow, then sends the user back to your app.
+If you're building an app for other people and each user needs their own Kyara API key, use the hosted onboarding URL instead of asking users to visit the dashboard and create keys by hand. Kyara handles sign-in, key generation, and the explanation in one hosted flow, then sends the user back to your app.
 
 ## Onboarding URL
 
@@ -14,8 +14,8 @@ Direct your users to the following URL, replacing the `redirect` value with your
 https://api.kyara-intelligence.com/onboard?redirect=https://your-app.com/callback
 ```
 
-<ParamField query="redirect" type="string" required>
-  The URL Kyara redirects the user to after they generate their key. Must be a valid `http` or `https` URL. Kyara displays the destination domain to the user before sending them back, so they always know where they are going.
+<ParamField query="redirect" type="string">
+  The URL Kyara redirects the user to after they generate their key. Must be a valid `http` or `https` URL, otherwise the flow returns a `400` error. Kyara displays the destination domain to the user before sending them back, so they always know where they are going. If you omit `redirect`, the user lands on a standalone key-generation page with no app handoff.
 </ParamField>
 
 ## What the user sees
@@ -25,10 +25,10 @@ https://api.kyara-intelligence.com/onboard?redirect=https://your-app.com/callbac
     The user authenticates with Kyara. If they don't have an account yet, they can sign up in the same flow.
   </Step>
   <Step title="Review and generate a key">
-    Kyara explains what an API key is for and which app requested it, then the user generates one.
+    Kyara explains what an API key is for and which app requested it, then the user generates one. The key is shown once for the user to copy.
   </Step>
   <Step title="Return to your app">
-    The user is redirected to the `redirect` URL you provided so they can finish connecting their key inside your app.
+    The user is redirected to the `redirect` URL you provided. The key is not appended to the redirect, so the user pastes the copied key into your app to finish connecting.
   </Step>
 </Steps>
 
@@ -37,5 +37,5 @@ https://api.kyara-intelligence.com/onboard?redirect=https://your-app.com/callbac
 </Note>
 
 <Tip>
-  Link users directly to this onboarding URL in your app's settings or onboarding flow — it handles signup and key creation in a single step, with no manual dashboard navigation required.
+  Link users directly to this onboarding URL from your app's settings or onboarding flow. It handles sign-up and key creation in one step, with no manual dashboard navigation.
 </Tip>
