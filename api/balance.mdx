@@ -4,7 +4,7 @@ sidebarTitle: "Balance"
 description: "Read your Kyara Intelligence credit balances and plan caps. Returns base credits, overage credits, totals, and the current billing window."
 ---
 
-The balance endpoint returns your current credit balances, plan caps, and billing window. Call it any time to check how many credits you have left and when your base balance next refreshes.
+The balance endpoint returns your current credit balances, plan caps, and billing window. Call it any time to check how many credits you have left and when your base balance next refreshes. For how the buckets and credit system work, see [Plans and credits](/plans-and-credits).
 
 ## Request
 
@@ -32,18 +32,18 @@ A successful request returns a JSON object with your balances, caps, and the act
   "plan": "lite",
   "balances": {
     "base": { "credits": 500000, "percent": 50 },
-    "overage": { "credits": 25000000, "percent": 25 },
+    "overage": { "credits": 10000000, "percent": 25 },
     "additional": { "credits": 0 },
-    "total": { "credits": 25500000, "percent": 25.25 }
+    "total": { "credits": 10500000, "percent": 25.61 }
   },
   "caps": {
     "base": { "credits": 1000000 },
-    "overage": { "credits": 100000000 },
-    "total": { "credits": 101000000 }
+    "overage": { "credits": 40000000 },
+    "total": { "credits": 41000000 }
   },
   "baseWindow": {
     "startedAt": "2030-01-01T00:00:00.000Z",
-    "refreshesAt": "2030-01-01T04:00:00.000Z"
+    "refreshesAt": "2030-01-01T08:00:00.000Z"
   },
   "overageWindow": {
     "startedAt": "2030-01-01T00:00:00.000Z",
