@@ -17,12 +17,6 @@
     "dismissible": true
   },
   "navbar": {
-    "links": [
-      {
-        "label": "Kyara Intelligence",
-        "href": "https://kyara-intelligence.com/"
-      }
-    ],
     "primary": {
       "type": "button",
       "label": "Dashboard",
