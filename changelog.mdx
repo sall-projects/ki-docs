@@ -6,6 +6,15 @@ description: "Track new features, improvements, and changes to Kyara Intelligenc
 
 Follow along as Kyara Intelligence evolves. This is where we track what ships. Kyara has been in active development for a while, and while earlier work is not captured here, this is the first release we are tracking publicly.
 
+<Update label="0.3" description="July 31, 2026" tags={["Billing fairness", "Reasoning"]}>
+  A billing fairness release: you no longer pay for empty generations, and a credit refill race that could overfill buckets is fixed.
+
+  - **Empty generations are free.** A generation that produces zero visible output costs nothing.
+  - **Every request has a sane output cap.** Requests without an output limit now default to 8,192 output tokens, and explicit limits are clamped to the model's maximum, so the pre-flight cost estimate and the actual generation always agree on the same bound.
+  - **Finer reasoning control.** The `reasoning` object now accepts `enabled` and `exclude` booleans alongside `effort` and `max_tokens`, so you can toggle reasoning on or off and keep reasoning tokens out of the response.
+  - **Credit refills no longer overfill.** Concurrent requests arriving right as a credit window elapsed could each apply a full refill, pushing a bucket above its plan cap. The refill decision now happens under a lock, and balances that were over-granted by this bug have been corrected.
+</Update>
+
 <Update label="0.2" description="July 24, 2026" tags={["Stability", "Billing accuracy"]}>
   A large rewrite of the API plus a wave of gateway improvements. The whole stack is more stable, usage tracking is more precise, and caching hits far more often.
 
