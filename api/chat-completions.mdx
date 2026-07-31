@@ -82,11 +82,11 @@ print(response.choices[0].message.content)
 </ParamField>
 
 <ParamField body="max_tokens" type="integer">
-  Maximum number of tokens to generate. You can use `max_completion_tokens` interchangeably.
+  Maximum number of tokens to generate. You can use `max_completion_tokens` interchangeably. If you set neither, the limit defaults to `8192`. Values above the model's maximum output length are lowered to that maximum rather than rejected.
 </ParamField>
 
 <ParamField body="max_completion_tokens" type="integer">
-  Alias for `max_tokens`. Maximum number of tokens to generate in the completion.
+  Alias for `max_tokens`. Maximum number of tokens to generate in the completion. Defaults to `8192` and is capped at the model's maximum output length.
 </ParamField>
 
 <ParamField body="stream" type="boolean">
@@ -94,9 +94,11 @@ print(response.choices[0].message.content)
 </ParamField>
 
 <ParamField body="reasoning" type="object">
-  Controls reasoning behaviour for models that support it. Pass an object with either or both of:
-  - `effort` (string), for example `"low"`, `"medium"`, or `"high"`
+  Controls reasoning behaviour for models that support it. Pass an object with any of:
+  - `effort` (string), one of `"max"`, `"xhigh"`, `"high"`, `"medium"`, `"low"`, `"minimal"`, or `"none"`
   - `max_tokens` (integer), the maximum tokens to spend on reasoning
+  - `enabled` (boolean), turns reasoning on or off for models that support toggling it
+  - `exclude` (boolean), when `true` the model still reasons but the reasoning text is left out of the response
 
   The top-level `reasoning_effort` is also accepted and is folded into `reasoning.effort`. If you set both, `reasoning.effort` takes precedence.
 </ParamField>

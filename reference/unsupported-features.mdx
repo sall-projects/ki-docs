@@ -48,7 +48,7 @@ These parameters are accepted and passed through to the model:
 - `n` (only `1` is accepted; any other value is rejected with a `400` error)
 - `stream`, `stream_options` (`include_usage`, `include_obfuscation`)
 - `logprobs`, `top_logprobs`, `user`
-- `reasoning` (object with `effort` and/or `max_tokens`)
+- `reasoning` (object with `effort`, `max_tokens`, `enabled`, and `exclude`)
 - `reasoning_effort` (folded into `reasoning.effort`; an explicit `reasoning.effort` wins)
 
 ### Silently ignored
@@ -74,6 +74,7 @@ The following request shapes return a `400` validation error:
 ## Notes
 
 - `top_k` is accepted as an extension beyond the OpenAI standard; many models support it.
+- Requests without `max_tokens` or `max_completion_tokens` get a default output limit of `8192` tokens. Explicit values above the model's maximum output length are lowered to that maximum.
 - To control reasoning, send `"reasoning": { "effort": "medium" }`. The top-level `reasoning_effort` also works and is folded into `reasoning.effort`, with an explicit `reasoning.effort` winning.
 - Support for sampling parameters varies per model, so check the [catalog](https://kyara-intelligence.com/models).
 

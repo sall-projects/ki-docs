@@ -59,8 +59,8 @@ Each request is metered by its actual token usage at the model's listed prices, 
 
 Two things happen around every request:
 
-1. **Before the request runs**, Kyara estimates its cost from your prompt size and requested output length. If your total balance across all three buckets cannot cover the estimate, the request is rejected with a `403` error and the code `insufficient_balance`. The estimate is deliberately conservative and is used only for this check, never for billing.
-2. **After the response finishes**, the actual usage is billed and split across your buckets in the spend order above.
+1. **Before the request runs**, Kyara estimates its cost from your prompt size and requested output length. Requests that do not set `max_tokens` or `max_completion_tokens` are estimated at the default limit of 8,192 output tokens, so setting an explicit limit lowers the estimate if your balance is running low. If your total balance across all three buckets cannot cover the estimate, the request is rejected with a `403` error and the code `insufficient_balance`. The estimate is deliberately conservative and is used only for this check, never for billing.
+2. **After the response finishes**, the actual usage is billed and split across your buckets in the spend order above. A response with no visible output is free: if the model returns no assistant content, even when it produced reasoning tokens, nothing is charged.
 
 Bigger prompts, longer outputs, and more expensive models consume your budget faster. You do not need to do any token math yourself: the [dashboard](https://kyara-intelligence.com/dashboard) and the [balance endpoint](/api/balance) always show what you have left and when each bucket refreshes.
 
