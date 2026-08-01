@@ -6,6 +6,12 @@ description: "Track new features, improvements, and changes to Kyara Intelligenc
 
 Follow along as Kyara Intelligence evolves. This is where we track what ships. Kyara has been in active development for a while, and while earlier work is not captured here, this is the first release we are tracking publicly.
 
+<Update label="0.4" description="August 1, 2026" tags={["API responses"]}>
+  A small response cleanup release.
+
+  - **`system_fingerprint` is no longer returned.** The `system_fingerprint` field is now stripped from chat completion responses, both non-streaming responses and every streaming chunk. It exposed upstream infrastructure details and carried no meaning for Kyara requests.
+</Update>
+
 <Update label="0.3" description="July 31, 2026" tags={["Billing fairness", "Reasoning"]}>
   A billing fairness release: you no longer pay for empty generations, and a credit refill race that could overfill buckets is fixed.
 

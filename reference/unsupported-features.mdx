@@ -77,6 +77,7 @@ The following request shapes return a `400` validation error:
 - Requests without `max_tokens` or `max_completion_tokens` get a default output limit of `8192` tokens. Explicit values above the model's maximum output length are lowered to that maximum.
 - To control reasoning, send `"reasoning": { "effort": "medium" }`. The top-level `reasoning_effort` also works and is folded into `reasoning.effort`, with an explicit `reasoning.effort` winning.
 - Support for sampling parameters varies per model, so check the [catalog](https://kyara-intelligence.com/models).
+- Responses do not include a `system_fingerprint` field. It is stripped from non-streaming responses and streaming chunks alike.
 
 <Tip>
   This list can shrink. Unsupported today does not mean unsupported forever. Check back here as the platform evolves; newly added capabilities will move off this page and into the API reference.
