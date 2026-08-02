@@ -9,7 +9,7 @@ Follow along as Kyara Intelligence evolves. This is where we track what ships. K
 <Update label="0.4" description="August 2, 2026" tags={["Billing"]}>
   One weekly allowance now replaces the separate base and weekly buckets.
 
-  - **One weekly allowance per plan.** Spark includes \$3.50 per week and Ember includes \$7.00 per week. The base bucket and its eight-hour refresh are gone.
+  - **One weekly allowance per plan.** Spark includes \$4.00 per week and Ember includes \$8.00 per week. The base bucket and its eight-hour refresh are gone.
   - **Everyone resets Friday at 06:00 UTC.** The single global reset replaces per-user rolling windows. Unused allowance does not roll over.
   - **Going over carries into the next reset.** Postpay usage beyond your balance is deducted from Friday's allowance. Renewing or changing plans restores the full allowance. Top-up credits are untouched and never go negative.
   - **`GET /v1/balance` has a new shape.** `balances.weekly`, `caps.weekly`, and a static `refresh` object replace the base and overage balances, caps, and two window objects. `balances.total` no longer reports a percentage. Reading your balance no longer triggers refills.
