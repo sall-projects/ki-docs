@@ -1,10 +1,10 @@
 ---
 title: "Balance"
 sidebarTitle: "Balance"
-description: "Read your Kyara Intelligence credit balances and plan caps. Returns base credits, overage credits, totals, and the current billing window."
+description: "Read your weekly allowance balance, top-up credits, plan cap, and reset schedule."
 ---
 
-The balance endpoint returns your current credit balances, plan caps, and billing window. Call it any time to check how many credits you have left and when your base balance next refreshes. For how the buckets and credit system work, see [Plans and credits](/plans-and-credits).
+The balance endpoint returns your weekly allowance balance, top-up credits, plan cap, and reset schedule. Call it any time to check how many credits you have left. For an overview of allowances and top-up credits, see [Plans and credits](/plans-and-credits).
 
 ## Request
 
@@ -23,7 +23,7 @@ curl https://api.kyara-intelligence.com/v1/balance \
 
 ## Response
 
-A successful request returns a JSON object with your balances, caps, and the active billing window.
+A successful request returns a JSON object with your balances, weekly cap, and reset schedule.
 
 ```json
 {
@@ -31,24 +31,12 @@ A successful request returns a JSON object with your balances, caps, and the act
   "available": true,
   "plan": "lite",
   "balances": {
-    "base": { "credits": 500000, "percent": 50 },
-    "overage": { "credits": 10000000, "percent": 25 },
+    "weekly": { "credits": 24500000, "percent": 70 },
     "additional": { "credits": 0 },
-    "total": { "credits": 10500000, "percent": 25.61 }
+    "total": { "credits": 24500000 }
   },
-  "caps": {
-    "base": { "credits": 1000000 },
-    "overage": { "credits": 40000000 },
-    "total": { "credits": 41000000 }
-  },
-  "baseWindow": {
-    "startedAt": "2030-01-01T00:00:00.000Z",
-    "refreshesAt": "2030-01-01T08:00:00.000Z"
-  },
-  "overageWindow": {
-    "startedAt": "2030-01-01T00:00:00.000Z",
-    "refreshesAt": "2030-01-08T00:00:00.000Z"
-  }
+  "caps": { "weekly": { "credits": 35000000 } },
+  "refresh": { "cadence": "weekly", "day": "friday", "time": "06:00Z" }
 }
 ```
 
@@ -57,70 +45,51 @@ A successful request returns a JSON object with your balances, caps, and the act
 </ResponseField>
 
 <ResponseField name="available" type="boolean">
-  `true` while you have credits remaining. Becomes `false` when your total balance is fully exhausted.
+  `true` while `balances.weekly.credits + balances.additional.credits` is greater than zero. Otherwise, `false`.
 </ResponseField>
 
 <ResponseField name="plan" type="string">
-  Your current Kyara plan identifier (e.g. `"lite"`).
+  Your current Kyara plan identifier. Spark returns `"lite"`. Ember returns `"premium"`.
 </ResponseField>
 
 <ResponseField name="balances" type="object">
   Your remaining credits broken down by type.
 
   <Expandable title="Balances object">
-    <ResponseField name="base" type="object">
-      Credits from your plan's base allocation. Contains `credits` (integer) and `percent` (number, the percentage of the base cap remaining).
-    </ResponseField>
-    <ResponseField name="overage" type="object">
-      Credits from your overage pool. Contains `credits` (integer) and `percent` (number).
+    <ResponseField name="weekly" type="object">
+      Credits remaining in your weekly allowance. Contains `credits` (integer) and `percent` (number). The credit balance can be negative when a completed request goes over the allowance. `percent` is the remaining balance as a percentage of the weekly cap, clamped from 0 to 100.
     </ResponseField>
     <ResponseField name="additional" type="object">
-      Purchased credits, which have no plan cap. Contains `credits` (integer) only, with no `percent`.
+      Purchased top-up credits. Contains `credits` (integer) only. Top-up credits have no plan cap and never go negative.
     </ResponseField>
     <ResponseField name="total" type="object">
-      Combined base, overage, and additional credits. Contains `credits` (integer) and `percent` (number, the percentage of the total cap remaining). The `percent` is measured against the base and overage caps only, since additional credits are uncapped.
+      Weekly allowance credits plus top-up credits. Contains `credits` (integer) only. A negative weekly balance reduces this total.
     </ResponseField>
   </Expandable>
 </ResponseField>
 
 <ResponseField name="caps" type="object">
-  The maximum credit limits for your plan.
+  The weekly credit limit for your plan.
 
   <Expandable title="Caps object">
-    <ResponseField name="base" type="object">
-      Maximum base credits. Contains `credits` (integer).
-    </ResponseField>
-    <ResponseField name="overage" type="object">
-      Maximum overage credits. Contains `credits` (integer).
-    </ResponseField>
-    <ResponseField name="total" type="object">
-      Maximum total credits (`base.credits` + `overage.credits`). Contains `credits` (integer).
+    <ResponseField name="weekly" type="object">
+      Maximum weekly allowance credits. Contains `credits` (integer).
     </ResponseField>
   </Expandable>
 </ResponseField>
 
-<ResponseField name="baseWindow" type="object">
-  The current billing window for your base credit allocation.
+<ResponseField name="refresh" type="object">
+  The global weekly reset schedule. This object contains static schedule configuration, not per-user billing-window state. Every account resets at the same moment.
 
-  <Expandable title="BaseWindow object">
-    <ResponseField name="startedAt" type="string">
-      ISO 8601 timestamp when the current billing window began.
+  <Expandable title="Refresh object">
+    <ResponseField name="cadence" type="string">
+      Always `"weekly"`.
     </ResponseField>
-    <ResponseField name="refreshesAt" type="string">
-      ISO 8601 timestamp when your base credits will next refresh.
+    <ResponseField name="day" type="string">
+      Always `"friday"`.
     </ResponseField>
-  </Expandable>
-</ResponseField>
-
-<ResponseField name="overageWindow" type="object">
-  The current billing window for your overage credit allocation.
-
-  <Expandable title="OverageWindow object">
-    <ResponseField name="startedAt" type="string">
-      ISO 8601 timestamp when the current overage window began.
-    </ResponseField>
-    <ResponseField name="refreshesAt" type="string">
-      ISO 8601 timestamp when your overage credits will next refresh.
+    <ResponseField name="time" type="string">
+      Always `"06:00Z"`, which is 06:00 UTC.
     </ResponseField>
   </Expandable>
 </ResponseField>
@@ -133,5 +102,5 @@ Errors follow the standard OpenAI error format:
 - **`500 server_error`**: the key is valid but Kyara hit missing or invalid balance data.
 
 <Note>
-  This endpoint never blocks on an empty balance. It always reports the current state and returns `available: false` when credits are exhausted rather than refusing the request.
+  This endpoint never blocks on an empty balance. It always reports the current state and returns `available: false` when credits are exhausted rather than refusing the request. Reading your balance does not trigger a refill.
 </Note>

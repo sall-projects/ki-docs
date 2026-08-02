@@ -1,20 +1,19 @@
 ---
 title: "Plans and credits"
 sidebarTitle: "Plans & Credits"
-description: "How Kyara Intelligence billing works: subscription plans, the credit system, and the Base, Weekly, and Additional buckets your requests spend from."
+description: "How Kyara Intelligence billing works: subscription plans, weekly allowances, and top-up credits."
 ---
 
-Kyara Intelligence uses a subscription with a built-in compute budget instead of pay-per-token invoicing. Your plan grants credits into buckets that refresh on a schedule, every request spends from those buckets, and you can never wake up to a surprise bill.
+Kyara Intelligence uses a subscription with a built-in compute budget instead of pay-per-token invoicing. Your plan includes a weekly allowance, every request draws from your credit balance, and you can never wake up to a surprise bill.
 
 ## Plans
 
-Both plans include every model in the catalog. The only difference is the size of your compute budget.
+Both plans include every model in the catalog. The only difference is the size of your weekly allowance.
 
 | | Spark | Ember |
 |---|---|---|
 | Price | \$15/month | \$30/month |
-| Base bucket | \$0.10 in credits, refreshed every 8 hours | \$0.20 in credits, refreshed every 8 hours |
-| Weekly bucket | \$4.00 in credits, refreshed every 7 days | \$8.00 in credits, refreshed every 7 days |
+| Weekly allowance | 35,000,000 credits (\$3.50), refreshed every Friday | 70,000,000 credits (\$7.00), refreshed every Friday |
 | Models | Full catalog | Full catalog |
 
 <Note>
@@ -27,31 +26,29 @@ Balances are tracked in credits at a fixed rate:
 
 **10,000,000 credits = \$1.00 USD**
 
-So a Spark plan's Weekly bucket holds 40,000,000 credits (\$4.00) and its Base bucket holds 1,000,000 credits (\$0.10). The [balance endpoint](/api/balance) reports raw credit amounts; divide by 10,000,000 to convert to dollars.
+Spark's weekly allowance holds 35,000,000 credits (\$3.50). The [balance endpoint](/api/balance) reports raw credit amounts. Divide by 10,000,000 to convert credits to dollars.
 
-## The bucket system
+## How your balance works
 
-Your balance is split across three buckets. Every request spends from them in a fixed order: **Base first, then Weekly, then Additional**.
+Every request spends from your **weekly allowance first, then top-up credits**.
 
-<Steps>
-  <Step title="Base">
-    A small allowance that refreshes to full **every 8 hours**. Every request draws from Base first. It does not roll over: whatever is left when the window ends is replaced, not added, so each refresh starts you fresh at the cap.
-  </Step>
-  <Step title="Weekly">
-    Your main compute budget, granted a week at a time. Once Base is empty, requests draw from here. It refreshes to full **every 7 days**, counted from the start of your current weekly window.
-  </Step>
-  <Step title="Additional">
-    Optional one-time top-up credits purchased from the [store](https://kyara-intelligence.com/dashboard/store). They have no cap, **never expire**, and are only touched after Base and Weekly are both empty.
-  </Step>
-</Steps>
+### Weekly allowance
 
-### Why a Base bucket?
+Your plan's allowance resets to full every Friday at 06:00 UTC. The reset happens at the same moment for everyone. Unused allowance does not roll over.
 
-The 8-hour Base bucket absorbs everyday usage so your Weekly budget drains slowly. Light, regular use may never dip into Weekly at all, while a heavy session simply spills over into it. This smooths usage across the week instead of letting one busy day consume everything.
+Your allowance is also restored to the full plan cap when your subscription renews or you change plans.
+
+### Top-up credits
+
+You can buy optional one-time credit packs from the [store](https://kyara-intelligence.com/dashboard/store). Top-up credits have no cap and never expire. Kyara spends them only after your weekly allowance is exhausted. You need an active subscription to buy them.
 
 ### Can my balance go negative?
 
-Slightly, yes. Costs are settled after a response finishes, so your final request before running out can push the Weekly bucket a little below zero. That small shortfall is deducted from the next weekly refresh. Purchased Additional credits are never driven negative.
+Your weekly allowance can go below zero. Kyara settles the actual cost after a response finishes, so a request can complete after using the remaining allowance.
+
+The shortfall carries into the next Friday reset. The reset adds your plan's weekly allowance, then deducts the shortfall. A subscription renewal or plan change instead restores the full allowance and forgives the shortfall.
+
+Purchased top-up credits never go negative. They can keep requests running while your weekly balance is below zero.
 
 ## What a request costs
 
@@ -59,18 +56,18 @@ Each request is metered by its actual token usage at the model's listed prices, 
 
 Two things happen around every request:
 
-1. **Before the request runs**, Kyara estimates its cost from your prompt size and requested output length. Requests that do not set `max_tokens` or `max_completion_tokens` are estimated at the default limit of 8,192 output tokens, so setting an explicit limit lowers the estimate if your balance is running low. If your total balance across all three buckets cannot cover the estimate, the request is rejected with a `403` error and the code `insufficient_balance`. The estimate is deliberately conservative and is used only for this check, never for billing.
-2. **After the response finishes**, the actual usage is billed and split across your buckets in the spend order above. A response with no visible output is free: if the model returns no assistant content, even when it produced reasoning tokens, nothing is charged.
+1. **Before the request runs**, Kyara estimates its cost from your prompt size and requested output length. Requests that do not set `max_tokens` or `max_completion_tokens` are estimated at the default limit of 8,192 output tokens. Setting an explicit limit lowers the estimate if your balance is running low. Kyara checks the estimate against your weekly allowance and top-up credits combined. A negative weekly balance reduces the available total. If the total cannot cover the estimate, the request is rejected with a `403` error and the code `insufficient_balance`. The estimate is deliberately conservative and is used only for this check, never for billing.
+2. **After the response finishes**, Kyara bills the actual usage. It spends the weekly allowance first, then top-up credits. A response with no visible output is free. If the model returns no assistant content, even when it produced reasoning tokens, nothing is charged.
 
-Bigger prompts, longer outputs, and more expensive models consume your budget faster. You do not need to do any token math yourself: the [dashboard](https://kyara-intelligence.com/dashboard) and the [balance endpoint](/api/balance) always show what you have left and when each bucket refreshes.
+Bigger prompts, longer outputs, and more expensive models consume your budget faster. You do not need to do any token math yourself. The [dashboard](https://kyara-intelligence.com/dashboard) and the [balance endpoint](/api/balance) show what you have left and the weekly reset schedule.
 
 ## Running out and topping up
 
-When all three buckets are empty, requests fail with `403 insufficient_balance` until your Base bucket refreshes (at most 8 hours away) or you add credits. You have two options:
+When your weekly allowance and top-up credits are both exhausted, requests fail with `403 insufficient_balance`. The next Friday reset is at most seven days away. You have two options:
 
 <CardGroup cols={2}>
-  <Card title="Wait for a refresh" icon="clock">
-    Base refills every 8 hours and Weekly every 7 days. Check `refreshesAt` on the [balance endpoint](/api/balance) to see exactly when.
+  <Card title="Wait for the Friday reset" icon="clock">
+    The weekly allowance resets every Friday at 06:00 UTC. Check the `refresh` block on the [balance endpoint](/api/balance) for the schedule.
   </Card>
   <Card title="Buy a credit pack" icon="coins">
     One-time packs of \$5, \$10, \$25, or \$50 from the [store](https://kyara-intelligence.com/dashboard/store). They stack on either plan and never expire. An active subscription is required to purchase.
@@ -79,5 +76,5 @@ When all three buckets are empty, requests fail with `403 insufficient_balance` 
 
 ## Checking your balance
 
-- **Dashboard**: the [usage page](https://kyara-intelligence.com/dashboard) shows each bucket, its refresh timer, and a ledger of every grant and debit.
-- **API**: call [`GET /v1/balance`](/api/balance) with your API key to read exact credit amounts, plan caps, and refresh timestamps programmatically.
+- **Dashboard**: the [usage page](https://kyara-intelligence.com/dashboard) shows your weekly meter, next reset date, top-up balance, and complete ledger. The ledger includes weekly reset and plan grant entries.
+- **API**: call [`GET /v1/balance`](/api/balance) with your API key to read exact credit amounts, your weekly cap, and the reset schedule.
